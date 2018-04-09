@@ -1,19 +1,25 @@
 {
-  "name": "vue-demo",
-  "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
-  "dependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.4",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
-    "vue": "^2.5.16"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC"
+    "name": "vue-demo",
+    "version": "1.0.0",
+    "description": "A vue.js demo",
+    "main": "app.js",
+  
+    "dependencies": {
+        "babel-core": "^6.26.0",
+        "babel-loader": "^7.1.4",
+        "babel-preset-es2015": "^6.24.1",
+        "babel-preset-react": "^6.24.1",
+        "vue": "^2.5.16",
+        "webpack": "^3.6.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bibi941/vue-demo"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC"
 }
