@@ -1,0 +1,208 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+*,
+*::after,
+*::before {
+    box-sizing: border-box;
+}
+html{
+    overflow-y: scroll;
+}
+body {
+    background: linear-gradient(
+        0deg,
+        rgba(64, 81, 78, 1) 0%,
+        rgba(17, 153, 158, 1) 20%,
+        rgba(48, 227, 202, 1) 80%,
+        rgba(228, 249, 245, 1) 100%
+    );
+    width: 100%;
+    min-height: 100vh;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    overflow-x: hidden;
+}
+#signInAndSignUp {
+     background: rgba(40, 53, 64, 0.9);
+     padding: 40px;
+     max-width: 600px;
+     margin: 40px auto;
+     border-radius: 4px;
+     box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
+     color: white;
+}
+.sign{
+    display: flex;
+}
+.sign>div{
+     text-decoration: none;
+     padding: 15px;
+     background: rgba(160, 179, 176, 0.25);
+     color: #ffffff;
+     font-size: 20px;
+     float: left;
+     width: 50%;
+     text-align: center;
+     cursor: pointer;
+     transition: .5s ease;
+}
+.sign>div.active{
+    background: rgba(26, 177, 136, 1);
+}
+.signUp>form{
+    display: flex;
+    flex-direction: column
+}
+.signUp>form>div{
+    flex-grow: 1;
+}
+
+input[type='submit'][value="注册"],
+input[type='submit'][value="登入"] {
+    font-size: 20px;
+      width: 100%;
+      padding: 12px 2px;
+      text-align: center;
+      background: rgba(26, 177, 136, 1);
+      color: #f5f7ff;
+      border: none;
+      box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease-out;
+}
+
+.getOut{
+      width: 100%;
+      padding: 12px 2px;
+      text-align: center;
+      background: rgb(26, 177, 136);
+      color: #f5f7ff;
+      border: none;
+      box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease-out;
+      }
+.getOut:hover{
+    box-shadow: 0 40px 30px -4px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease-in;
+    }
+
+.formRow{
+    padding: 30px 6px;
+    
+}
+.formRow>input{
+    width: 100%;
+    min-height: 40px;
+}
+.todos {
+    min-height: 500px;
+    width: 550px;
+    padding: 50px 40px;
+    margin: auto;
+    margin-top: 50px;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transform: translate3d(0, -5px, 0);
+    background: rgba(255, 255, 255, 0);
+    transition: all 0.4s ease-out;
+}
+
+.todos:hover {
+    box-shadow: 0 70px 70px -35px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease-in;
+    transform: translate3d(0, 5px, 0);
+}
+
+.title {
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 1px;
+    margin-bottom: 30px;
+    font-size: 30px;
+}
+
+.newTask {
+    padding-bottom: 30px;
+}
+
+.input {
+    padding: 5px 0px;
+    outline: none;
+    width: 83%;
+    background: rgba(255, 255, 255, 0);
+    border: none;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.button {
+    color: rgba(64, 81, 78, 1);
+    cursor: pointer;
+}
+
+input[type='submit'][value="put in"] {
+    width: 15%;
+    padding: 5px 2px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0);
+    color: #32343c;
+    border: none;
+    box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease-out;
+}
+
+input[type='submit']:hover {
+    box-shadow: 0 40px 30px -4px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s ease-in;
+}
+
+.list {
+    list-style: none;
+    letter-spacing: 1px;
+    margin-left: 32px;
+    padding: 10px 0;
+}
+
+.list span {
+    line-height: 1.4;
+}
+
+.list > label {
+    position: relative;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+}
+
+.list > label:after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: -30px;
+    display: block;
+    height: 15px;
+    width: 15px;
+    border: 1px solid #cccccc;
+    background: rgba(255, 255, 255, 0);
+    cursor: pointer;
+    outline: none;
+}
+
+input[type='checkbox'] {
+    display: none;
+}
+
+input[type='checkbox']:checked + span {
+    text-decoration: line-through;
+}
+
+input[type='checkbox']:checked + span::before {
+    content: '';
+    position: absolute;
+    left: -32px;
+    width: 15px;
+    height: 15px;
+    background: #cccccc;
+}

@@ -1,160 +1,76 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
-    <meta charset=utf-8>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./main.css">
 </head>
-<style>
-    * {
-        box-sizing: border-box;
-        padding: 0;
-        margin: 0;
-    }
-
-    body {
-        background: linear-gradient(0deg, rgba(64, 81, 78, 1) 0%,
-        rgba(17, 153, 158, 1) 20%,
-        rgba(48, 227, 202, 1) 80%,
-        rgba(228, 249, 245, 1) 100%);
-        width: 100%;
-        min-height: 100vh;
-        font-family: "Open Sans", sans-serif;
-        font-size: 16px;
-        overflow-x: hidden;
-    }
-
-    .todos {
-        position: relative;
-        min-height: 500px;
-        width: 550px;
-        padding: 50px 40px;
-        margin: auto;
-        margin-top: 55px;
-        color: #fff;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        transform: translate3d(0, -5px, 0);
-        background: rgba(255, 255, 255, 0);
-        transition: all 0.4s ease-out;
-    }
-    .todos:hover {
-    box-shadow: 0 70px 70px -35px rgba(0, 0, 0, 0.3);
-    transition: all 0.4s ease-in;
-    transform: translate3d(0, 5px, 0);
-}
-
-    .title {
-        text-transform: uppercase;
-        text-align: center;
-        letter-spacing: 1px;
-        margin-bottom: 30px;
-    }
-
-    .newTask {
-        padding-bottom: 30px;
-    }
-
-    .input {
-        padding: 5px 0px;
-        outline: none;
-        width: 83%;
-        background: rgba(255, 255, 255, 0);
-        border: none;
-        border-bottom: 2px solid rgba(0, 0, 0, 0.3);
-    }
-
-    .button {
-        color: rgba(64, 81, 78, 1);
-        cursor: pointer;
-    }
-
-    input[type="submit"] {
-        width: 15%;
-        padding: 5px 2px;
-        text-align: center;
-        background: rgba(255, 255, 255, 0);
-        color: #32343c;
-        border: none;
-        box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.3);
-        transition: all 0.2s ease-out;
-    }
-
-    input[type="submit"]:hover {
-        box-shadow: 0 40px 30px -4px rgba(0, 0, 0, 0.3);
-        transition: all 0.4s ease-in;
-    }
-
-    .list {
-        list-style: none;
-        letter-spacing: 0.6px;
-        margin-left: 32px;
-    }
-
-    .list span {
-        line-height: 1.4;
-    }
-
-    label {
-        position: relative;
-        display: inline-block;
-        top: 0;
-        left: 0;
-        cursor: pointer;
-    }
-
-    label:after {
-        content: '';
-        position: absolute;
-        top: 3px;
-        left: -30px;
-        display: block;
-        height: 15px;
-        width: 15px;
-        border: 1px solid #cccccc;
-        background: rgba(255, 255, 255, 0);
-        cursor: pointer;
-        outline: none;
-    }
-
-    input[type='checkbox'] {
-        display: none;
-    }
-
-    input[type='checkbox']:checked+span {
-        text-decoration: line-through;
-    }
-
-    input[type='checkbox']:checked+span::before {
-        content: '';
-        position: absolute;
-        left: -32px;
-        width: 15px;
-        height: 15px;
-        background: #cccccc;
-    }
-</style>
 
 <body>
     <div id="app">
-
-        <ol class="todos">
-            <h1 class="title">{{title}}</h1>
-            <div class="newTask">
-                <input class="input" type="text" v-model="newTodo" @keypress.enter="addTodo" placeholder="What do you have to do?">
-                <input type="submit" value="put in" @click="addTodo">
+        <section v-if="!currentUser" id="signInAndSignUp">
+            <div class="sign" >
+                <div v-bind:class="{ active: isActive }"  @click="change('signUp')" >注册</div>
+                <div v-bind:class="{ active: !isActive }" @click="change('signIn')"  >登入</div>
             </div>
+            <div class="signUp">
+                <form v-if="actionType=='signUp'" @submit.prevent=signUp>
+                    <div class="formRow">
+                        用户名
+                        <input v-model="formData.username" type="text">
+                    </div>
+                    <div class="formRow">
+                        密　码
+                        <input v-model="formData.password" type="password">
+                    </div>
+                    <div class="formActions">
+                        <input type="submit" value="注册">
+                    </div>
+                </form>
+            </div>
+            <div class="login">
+                <form v-if="actionType=='signIn'" @submit.prevent=login>
+                    <div class="formRow">
+                        用户名
+                        <input v-model="formData.username" type="text">
+                    </div>
+                    <div class="formRow">
+                        密　码
+                        <input v-model="formData.password" type="password">
+                    </div>
+                    <div class="formActions">
+                        <input type="submit" value="登入">
+                    </div>
+                </form>
+            </div>
+        </section>
 
-            <li v-for="todo in todoList" class="list">
-                <label>
-                    <input type="checkbox" v-model="todo.done">
-                    <span>{{todo.title}}</span>
-                </label>
-                <span v-if='todo.done'>已完成</span>
-                <span v-else>未完成</span>
-                {{todo.date}}
-
-                <span v-on:click='removeTodo(todo)' class="button">X</span>
-            </li>
-        </ol>
+        <section id="todo" v-if="currentUser">
+        
+            <ol class="todos">
+                <h1 class="title">{{title}}</h1>
+                <div class="newTask">
+                    <input class="input" type="text" v-model="newTodo" @keypress.enter="addTodo" placeholder="What do you have to do?">
+                    <input type="submit" value="put in" @click="addTodo">
+                </div>
+                <li v-for="todo in todoList" class="list">
+                    <label>
+                        <input type="checkbox" v-model="todo.done">
+                        <span>{{todo.title}}</span>
+                    </label>
+                    <span v-if='todo.done'>已完成</span>
+                    <span v-else>未完成</span>
+                    {{todo.date}}
+                    <span v-on:click='removeTodo(todo)' class="button">X</span>
+                </li>
+                <div @click="logout"　class="getOut">退出登录</div>
+            </ol>
+        </section>
     </div>
+ 
     <script src="bundle.js"></script>
 </body>
 
