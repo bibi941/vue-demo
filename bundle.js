@@ -320,25 +320,34 @@ var app = new _vue2.default({
         currentUser: null
     },
     created: function created() {
-        var _this = this;
-
-        window.onbeforeunload = function () {
-            var todoString = JSON.stringify(_this.newTodo);
-            var dataString = JSON.stringify(_this.todoList);
-            window.localStorage.setItem('myTodos', dataString);
-            window.localStorage.setItem('myinput', todoString);
-        };
-
-        var oldDataString = window.localStorage.getItem('myTodos');
-        var oldTodoString = window.localStorage.getItem('myinput');
-        var oldData = JSON.parse(oldDataString);
-        var oldTodo = JSON.parse(oldTodoString);
-        this.todoList = oldData || [];
-        this.newTodo = oldTodo || '';
         this.currentUser = this.getCurrentUser();
+        this.fetchTodos();
     },
 
     methods: {
+        fetchTodos: function fetchTodos() {
+            var _this = this;
+
+            if (this.currentUser) {
+                var query = new _leancloudStorage2.default.Query('AllTodos');
+                query.find().then(function (todos) {
+                    var avAllTodos = todos[0];
+                    var id = avAllTodos.id;
+                    _this.todoList = JSON.parse(avAllTodos.attributes.content);
+                    _this.todoList.id = id;
+                }, function (error) {
+                    console.error(error);
+                });
+            }
+        },
+        updateTodos: function updateTodos() {
+            var dataString = JSON.stringify(this.todoList);
+            var avTodos = _leancloudStorage2.default.Object.createWithoutData('AllTodos', this.todoList.id);
+            avTodos.set('content', dataString);
+            avTodos.save().then(function () {
+                console.log('更新成功');
+            });
+        },
         change: function change(data) {
             if (data === 'signUp') {
                 this.actionType = 'signUp';
@@ -346,6 +355,30 @@ var app = new _vue2.default({
                 this.actionType = 'signIn';
             }
             this.isActive = !this.isActive; //change-Active
+        },
+        saveTodos: function saveTodos() {
+            var _this2 = this;
+
+            var dataString = JSON.stringify(this.todoList);
+            var AVTodos = _leancloudStorage2.default.Object.extend('AllTodos');
+            var avTodos = new AVTodos();
+            var acl = new _leancloudStorage2.default.ACL();
+            acl.setReadAccess(_leancloudStorage2.default.User.current(), true);
+            acl.setWriteAccess(_leancloudStorage2.default.User.current(), true);
+            avTodos.set('content', dataString);
+            avTodos.setACL(acl);
+            avTodos.save().then(function (todo) {
+                _this2.todoList.id = todo.id;
+            }, function (error) {
+                // 异常处理
+            });
+        },
+        saveOrUpdateTodos: function saveOrUpdateTodos() {
+            if (this.todoList.id) {
+                this.updateTodos();
+            } else {
+                this.saveTodos();
+            }
         },
         addTodo: function addTodo() {
             if (!this.newTodo) {
@@ -367,13 +400,15 @@ var app = new _vue2.default({
                 done: false
             });
             this.newTodo = '';
+            this.saveOrUpdateTodos();
         },
         removeTodo: function removeTodo(todo) {
             var index = this.todoList.indexOf(todo); //在todoList中的index
             this.todoList.splice(index, 1); //删除这个todo,从index开始，删除1个
+            this.saveOrUpdateTodos();
         },
         signUp: function signUp() {
-            var _this2 = this;
+            var _this3 = this;
 
             var user = new _leancloudStorage2.default.User();
             // 设置用户名
@@ -382,16 +417,17 @@ var app = new _vue2.default({
             user.setPassword(this.formData.password);
             user.signUp().then(function (loginedUser) {
                 alert('注册成功！即将跳转页面');
-                _this2.currentUser = _this2.getCurrentUser();
+                _this3.currentUser = _this3.getCurrentUser();
             }, function (error) {
-                alert('注册失败');
+                alert('用户名已被注册');
             });
         },
         login: function login() {
-            var _this3 = this;
+            var _this4 = this;
 
             _leancloudStorage2.default.User.logIn(this.formData.username, this.formData.password).then(function (loginedUser) {
-                _this3.currentUser = _this3.getCurrentUser();
+                _this4.currentUser = _this4.getCurrentUser();
+                _this4.fetchTodos();
             }, function (error) {});
         },
         getCurrentUser: function getCurrentUser() {

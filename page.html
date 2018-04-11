@@ -32,7 +32,7 @@
                 </form>
             </div>
             <div class="login">
-                <form v-if="actionType=='signIn'" @submit.prevent=login>
+                <form v-if="actionType=='signIn'" @submit.prevent="login">
                     <div class="formRow">
                         用户名
                         <input v-model="formData.username" type="text">

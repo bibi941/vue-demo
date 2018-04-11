@@ -24,22 +24,39 @@ let app = new Vue({
         currentUser: null
     },
     created() {
-        window.onbeforeunload = () => {
-            let todoString = JSON.stringify(this.newTodo)
-            let dataString = JSON.stringify(this.todoList)
-            window.localStorage.setItem('myTodos', dataString)
-            window.localStorage.setItem('myinput', todoString)
-        }
-
-        let oldDataString = window.localStorage.getItem('myTodos')
-        let oldTodoString = window.localStorage.getItem('myinput')
-        let oldData = JSON.parse(oldDataString)
-        let oldTodo = JSON.parse(oldTodoString)
-        this.todoList = oldData || []
-        this.newTodo = oldTodo || ''
         this.currentUser = this.getCurrentUser()
+        this.fetchTodos()
     },
     methods: {
+        fetchTodos() {
+            if (this.currentUser) {
+                var query = new AV.Query('AllTodos')
+                query.find().then(
+                    todos => {
+                        let avAllTodos = todos[0]
+                        let id = avAllTodos.id
+                        this.todoList = JSON.parse(
+                            avAllTodos.attributes.content
+                        )
+                        this.todoList.id = id
+                    },
+                    function(error) {
+                        console.error(error)
+                    }
+                )
+            }
+        },
+        updateTodos() {
+            let dataString = JSON.stringify(this.todoList)
+            let avTodos = AV.Object.createWithoutData(
+                'AllTodos',
+                this.todoList.id
+            )
+            avTodos.set('content', dataString)
+            avTodos.save().then(() => {
+                console.log('更新成功')
+            })
+        },
         change(data) {
             if (data === 'signUp') {
                 this.actionType = 'signUp'
@@ -48,6 +65,31 @@ let app = new Vue({
             }
             this.isActive = !this.isActive //change-Active
         },
+        saveTodos() {
+            let dataString = JSON.stringify(this.todoList)
+            var AVTodos = AV.Object.extend('AllTodos')
+            var avTodos = new AVTodos()
+            var acl = new AV.ACL()
+            acl.setReadAccess(AV.User.current(), true)
+            acl.setWriteAccess(AV.User.current(), true)
+            avTodos.set('content', dataString)
+            avTodos.setACL(acl)
+            avTodos.save().then(
+                todo => {
+                    this.todoList.id = todo.id
+                },
+                function(error) {
+                    // 异常处理
+                }
+            )
+        },
+        saveOrUpdateTodos() {
+            if (this.todoList.id) {
+                this.updateTodos()
+            } else {
+                this.saveTodos()
+            }
+        },
         addTodo() {
             if (!this.newTodo) {
                 return
@@ -55,7 +97,7 @@ let app = new Vue({
             this.todoList.push({
                 title: this.newTodo,
                 createdAt: new Date(),
-                date: (function () {
+                date: (function() {
                     let d = new Date()
                     let year = d.getFullYear()
                     let month = d.getMonth() + 1
@@ -64,15 +106,30 @@ let app = new Vue({
                     let hour = d.getHours()
                     let minutes = d.getMinutes()
                     let seconds = d.getSeconds()
-                    return ('TIME:' + year + '.' + month + '.' + day + ' ' + hour + ':' + minutes + ':' + seconds)
+                    return (
+                        'TIME:' +
+                        year +
+                        '.' +
+                        month +
+                        '.' +
+                        day +
+                        ' ' +
+                        hour +
+                        ':' +
+                        minutes +
+                        ':' +
+                        seconds
+                    )
                 })(),
                 done: false
             })
             this.newTodo = ''
+            this.saveOrUpdateTodos()
         },
         removeTodo(todo) {
             let index = this.todoList.indexOf(todo) //在todoList中的index
             this.todoList.splice(index, 1) //删除这个todo,从index开始，删除1个
+            this.saveOrUpdateTodos()
         },
         signUp() {
             let user = new AV.User()
@@ -86,7 +143,7 @@ let app = new Vue({
                     this.currentUser = this.getCurrentUser()
                 },
                 error => {
-                    alert('注册失败')
+                    alert('用户名已被注册')
                 }
             )
         },
@@ -94,15 +151,16 @@ let app = new Vue({
             AV.User.logIn(this.formData.username, this.formData.password).then(
                 loginedUser => {
                     this.currentUser = this.getCurrentUser()
+                    this.fetchTodos()
                 },
-                function (error) {}
+                function(error) {}
             )
         },
         getCurrentUser() {
             let current = AV.User.current()
             if (current) {
-                let {id,createdAt,attributes: {username}} = current
-                return {id,username,createdAt}
+                let { id, createdAt, attributes: { username } } = current
+                return { id, username, createdAt }
             } else {
                 return null
             }
